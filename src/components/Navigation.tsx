@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
@@ -10,6 +10,8 @@ const navItems = [
 const Navigation = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement | null>(null);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     let lastY = window.scrollY;
@@ -27,6 +29,38 @@ const Navigation = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!isMobileOpen) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (!(event.target instanceof Node)) return;
+
+      const menuEl = mobileMenuRef.current;
+      const buttonEl = mobileMenuButtonRef.current;
+
+      const clickedInsideMenu = menuEl ? menuEl.contains(event.target) : false;
+      const clickedButton = buttonEl ? buttonEl.contains(event.target) : false;
+
+      if (!clickedInsideMenu && !clickedButton) {
+        setIsMobileOpen(false);
+      }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMobileOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isMobileOpen]);
+
   return (
     <motion.nav
       initial={{ y: -100, opacity: 0 }}
@@ -39,6 +73,7 @@ const Navigation = () => {
           {"<KrisiAnastas />"}
         </a>
         <button
+          ref={mobileMenuButtonRef}
           type="button"
           aria-expanded={isMobileOpen}
           aria-controls="mobile-nav"
@@ -82,6 +117,7 @@ const Navigation = () => {
         {isMobileOpen && (
           <motion.div
             id="mobile-nav"
+            ref={mobileMenuRef}
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
