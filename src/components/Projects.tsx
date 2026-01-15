@@ -32,7 +32,7 @@ const projects = [
 ];
 
 const otherProjects = [
-   {
+  {
     title: "My Portfolio Website",
     description: "The portfolio website for this repo — a modern, responsive React site showcasing projects and skills with smooth animations and a clean UI.",
     tech: ["React", "TypeScript", "Tailwind CSS", "Framer Motion", "Lucide React"],
@@ -83,8 +83,15 @@ const Projects = () => {
               <div className="flex items-start justify-between gap-6 mb-4">
                 <div>
                   <p className="font-mono text-primary text-sm mb-2">Featured Project</p>
-                  <h3 className="text-2xl font-bold hover:text-primary transition-colors">
-                    {project.title}
+                  <h3 className="text-2xl font-bold">
+                    <a
+                      href={project.live ?? project.github}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="hover:text-primary transition-colors"
+                    >
+                      {project.title}
+                    </a>
                   </h3>
                 </div>
 
@@ -150,6 +157,7 @@ const Projects = () => {
                     href={project.github}
                     className="text-muted-foreground hover:text-primary transition-colors"
                     aria-label="GitHub"
+                    target="_blank"
                   >
                     <Github size={18} />
                   </a>
